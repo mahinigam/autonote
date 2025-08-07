@@ -19,11 +19,3 @@ torch>=2.0.0
 sentencepiece>=0.1.99
 opencv-python>=4.8.0
 numpy>=1.24.0
-
-# Optional: Speech-to-Text (uncomment if needed)
-# openai-whisper>=20231117
-# SpeechRecognition>=3.10.0
-
-# Fallback API dependencies (optional)
-openai>=1.0.0
-requests>=2.31.0

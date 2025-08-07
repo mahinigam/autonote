@@ -14,9 +14,6 @@ class Config:
     UPLOAD_EXTENSIONS = ['.txt', '.pdf', '.docx', '.png', '.jpg', '.jpeg']
     UPLOAD_PATH = os.path.join(os.getcwd(), 'downloads')  # Use absolute path
     
-    # API configuration
-    OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-    
     # Rate limiting
     RATELIMIT_STORAGE_URL = 'memory://'
     

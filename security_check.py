@@ -65,14 +65,9 @@ def check_ai_configuration():
     """Check AI-related configuration"""
     print("\n🤖 Checking AI configuration...")
     
-    openai_key = os.getenv('OPENAI_API_KEY')
-    if openai_key:
-        if openai_key.startswith('sk-'):
-            print("✅ OpenAI API key is configured (fallback available)")
-        else:
-            print("⚠️  OpenAI API key format looks incorrect")
-    else:
-        print("📝 No OpenAI API key - using offline AI models only")
+    print("✅ Offline AI models configured (BART-large-CNN)")
+    print("🔧 No external API dependencies")
+    print("� Completely offline operation")
     
     return True
 

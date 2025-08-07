@@ -35,10 +35,6 @@ def generate_env_file():
 SECRET_KEY={secret_key}
 FLASK_ENV=development
 
-# Optional: OpenAI API key for enhanced AI summaries
-# Uncomment and add your key if you want OpenAI fallback
-# OPENAI_API_KEY=sk-your-openai-api-key-here
-
 # Optional: Enable debug mode for development
 # FLASK_DEBUG=True
 """
@@ -52,8 +48,7 @@ FLASK_ENV=development
         print(f"🔑 Generated SECRET_KEY: {secret_key}")
         print("\n📝 Next steps:")
         print("1. Review the .env file")
-        print("2. Add your OpenAI API key if needed (optional)")
-        print("3. Never commit the .env file to version control")
+        print("2. Never commit the .env file to version control")
         
     except Exception as e:
         print(f"❌ Error creating .env file: {e}")

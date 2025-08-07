@@ -90,7 +90,8 @@ def health_check():
             "offline_ai": True,
             "ocr": True,
             "pdf_processing": True,
-            "docx_processing": True
+            "docx_processing": True,
+            "completely_offline": True
         }
     }), 200
 
