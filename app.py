@@ -15,6 +15,9 @@ from utils.cleanup import start_background_cleanup
 app = Flask(__name__)
 app.config.from_object(Config)
 
+# Initialize configuration
+Config.init_app(app)
+
 # Initialize rate limiter
 limiter = Limiter(
     app=app,

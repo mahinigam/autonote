@@ -1,10 +1,12 @@
 import os
 import requests
-from typing import List
 
 def simple_text_summarizer(text: str) -> str:
     """Simple fallback summarizer without AI dependencies"""
-    sentences = text.split('.')
+    if not text or not text.strip():
+        return "• No content provided"
+    
+    sentences = text.strip().split('.')
     if len(sentences) <= 3:
         return f"• {text.strip()}"
     

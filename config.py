@@ -1,21 +1,30 @@
 import os
 from dotenv import load_dotenv
 
+# Load environment variables from .env file (for local development)
 load_dotenv()
 
 class Config:
-    SECRET_KEY = os.getenv('SECRET_KEY', 'supersecretkey-change-in-production')
+    # Security
+    SECRET_KEY = os.getenv('SECRET_KEY', 'fallback-secret-key-change-me')
+    
+    # File upload settings
     MAX_CONTENT_LENGTH = 10 * 1024 * 1024  # 10 MB
     UPLOAD_EXTENSIONS = ['.txt', '.pdf', '.docx', '.png', '.jpg', '.jpeg']
-    UPLOAD_PATH = 'downloads'
+    UPLOAD_PATH = os.path.join(os.getcwd(), 'downloads')  # Use absolute path
     
-    # OpenAI API configuration (optional)
+    # API configuration
     OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
     
-    # Flask-Limiter configuration
+    # Rate limiting
     RATELIMIT_STORAGE_URL = 'memory://'
     
-    # Security settings
-    SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
+    # Security settings for production
+    SESSION_COOKIE_SECURE = os.getenv('FLASK_ENV') == 'production'
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = 'Lax'
+    
+    # Ensure downloads directory exists
+    @classmethod
+    def init_app(cls, app):
+        os.makedirs(cls.UPLOAD_PATH, exist_ok=True)
