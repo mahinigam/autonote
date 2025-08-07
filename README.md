@@ -1,6 +1,8 @@
 # autonote
 
-A production-ready Flask web application that transforms documents into structured bullet-point notes using **offline A## 📋 Dependencies
+A production-ready Flask web application that transforms documents into structured bullet-point notes using **offline AI models**.
+
+## Dependencies
 
 - **Flask**: Web framework
 - **Flask-Limiter**: Rate limiting
@@ -13,18 +15,18 @@ A production-ready Flask web application that transforms documents into structur
 - **reportlab**: PDF generation
 - **Pillow**: Image processing.
 
-## 🚀 Features
+## Features
 
-- **🤖 100% Offline AI**: Uses local BART/PEGASUS models for summarization (no internet required)
-- **📄 Multi-format input support**: Text, PDF, DOCX, and image files (PNG/JPG with enhanced OCR)
-- **🔍 Advanced OCR**: OpenCV preprocessing for better image text extraction
-- **📊 Smart PDF processing**: Extracts both text and images from PDFs
-- **📤 Multiple export formats**: Download notes as TXT, MD, PDF, or DOCX
-- **⚡ Rate limiting**: 100 requests per day, 10 per minute
-- **🎨 Responsive design**: Clean, modern UI with Tailwind CSS
-- **☁️ Cloud ready**: Optimized for Render deployment
+- **100% Offline AI**: Uses local BART/PEGASUS models for summarization (no internet required)
+- **Multi-format input support**: Text, PDF, DOCX, and image files (PNG/JPG with enhanced OCR)
+- **Advanced OCR**: OpenCV preprocessing for better image text extraction
+- **Smart PDF processing**: Extracts both text and images from PDFs
+- **Multiple export formats**: Download notes as TXT, MD, PDF, or DOCX
+- **Rate limiting**: 100 requests per day, 10 per minute
+- **Responsive design**: Clean, modern UI with Tailwind CSS
+- **Cloud ready**: Optimized for Render deployment
 
-## 🔧 AI Technology Stack
+## AI Technology Stack
 
 - **Primary**: Facebook BART-large-CNN (offline, high quality)
 - **Fallback**: DistilBART (offline, faster)
@@ -40,7 +42,7 @@ A production-ready Flask web application that transforms documents into structur
 - **Images**: PNG/JPG files with OCR text extraction
 - **TXT**: Plain text file upload
 
-## 🚀 Deployment on Render
+## Deployment on Render
 
 1. Fork this repository
 2. Connect your GitHub repository to Render
@@ -55,7 +57,7 @@ A production-ready Flask web application that transforms documents into structur
 
 **Note**: The starter plan ($7/month) is required due to memory requirements of AI models. The free plan has insufficient RAM.
 
-## 💻 Local Development
+## Local Development
 
 1. Clone the repository:
 ```bash
@@ -93,7 +95,7 @@ If you prefer to generate keys manually:
 python -c "import secrets; print('SECRET_KEY=' + secrets.token_urlsafe(32))"
 ```
 
-## ⚙️ Configuration
+## Configuration
 
 Environment variables:
 
