@@ -60,7 +60,7 @@ def pdf_to_text(pdf_path: str) -> str:
             page = doc.load_page(page_num)
             
             # Extract text from the page
-            page_text = page.get_text()
+            page_text = page.get_text() # type: ignore
             if page_text and page_text.strip():
                 text += f"\n--- Page {page_num + 1} ---\n"
                 text += page_text + "\n"

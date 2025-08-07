@@ -9,7 +9,7 @@
     <h1 id="fallback-title" class="text-4xl font-bold text-gray-800" style="display: none;">autonote</h1>
   </div>
   <p class="text-lg text-center text-gray-600 mb-8">
-    Transform your documents into structured bullet-point notes using AI
+    Transform your documents into comprehensive, structured study notes using AI
   </p>
   
   {% with messages = get_flashed_messages(with_categories=true) %}
@@ -47,6 +47,22 @@
       >
       <p class="mt-2 text-sm text-gray-500">
         Supported formats: PDF, DOCX, TXT, PNG, JPG (max 10MB)
+      </p>
+    </div>
+    
+    <div>
+      <label for="note_style" class="block text-lg font-medium text-gray-700 mb-2">Note Style</label>
+      <select 
+        name="note_style" 
+        id="note_style"
+        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      >
+        <option value="structured">📚 Structured Study Notes (Recommended)</option>
+        <option value="bullet">• Simple Bullet Points</option>
+        <option value="detailed">📖 Detailed Analysis</option>
+      </select>
+      <p class="mt-2 text-sm text-gray-500">
+        Choose how you want your notes formatted
       </p>
     </div>
     

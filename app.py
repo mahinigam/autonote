@@ -142,7 +142,9 @@ def process():
     
     # Generate notes using summarization
     try:
-        notes = generate_notes(extracted_text)
+        # Get note style from form, default to structured
+        note_style = request.form.get('note_style', 'structured')
+        notes = generate_notes(extracted_text, note_style=note_style)
         
         # Generate unique file ID for downloads
         file_id = str(uuid.uuid4())
