@@ -1,0 +1,15 @@
+Flask>=2.2
+Flask-Login
+Flask-Limiter
+python-dotenv
+torch>=1.9.0
+transformers
+pytesseract
+Pillow
+PyMuPDF
+pdfminer.six
+python-docx
+docx2txt
+pdfkit
+reportlab
+gunicorn
