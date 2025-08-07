@@ -13,6 +13,7 @@ from utils.docx_reader import docx_to_text
 from utils.summarizer import generate_notes
 from utils.file_exports import save_as_txt, save_as_md, save_as_pdf, save_as_docx
 from utils.cleanup import start_background_cleanup
+from utils.chatbot import chat_with_document, get_chatbot
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -159,10 +160,16 @@ def process():
         # Convert markdown notes to HTML for better display
         notes_html = markdown.markdown(notes)
         
+        # Set up chatbot with the source document
+        chatbot = get_chatbot()
+        chatbot.set_source_document(extracted_text)
+        suggestions = chatbot.get_suggestions()
+        
         return render_template('result.html', 
                              notes=notes,
                              notes_html=notes_html, 
-                             original_text=extracted_text, 
+                             original_text=extracted_text,
+                             chat_suggestions=suggestions,
                              file_id=file_id)
     
     except Exception as e:
@@ -180,6 +187,50 @@ def download(file_id):
     else:
         flash("File not found.", "error")
         return redirect(url_for('index'))
+
+@app.route('/api/chat', methods=['POST'])
+@limiter.limit("30 per minute")
+def chat_api():
+    """API endpoint for chatbot interactions"""
+    try:
+        data = request.get_json()
+        question = data.get('question', '').strip()
+        
+        if not question:
+            return jsonify({'error': 'Question is required'}), 400
+        
+        # Get the chatbot response
+        response = chat_with_document(question)
+        
+        return jsonify({
+            'response': response,
+            'success': True
+        })
+    
+    except Exception as e:
+        return jsonify({
+            'error': f'Chat error: {str(e)}',
+            'success': False
+        }), 500
+
+@app.route('/api/chat/suggestions')
+@limiter.limit("10 per minute")
+def chat_suggestions():
+    """Get conversation suggestions"""
+    try:
+        chatbot = get_chatbot()
+        suggestions = chatbot.get_suggestions()
+        
+        return jsonify({
+            'suggestions': suggestions,
+            'success': True
+        })
+    
+    except Exception as e:
+        return jsonify({
+            'error': f'Error getting suggestions: {str(e)}',
+            'success': False
+        }), 500
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
