@@ -4,6 +4,7 @@ from flask_limiter.util import get_remote_address
 from werkzeug.utils import secure_filename
 import os
 import uuid
+import threading
 from config import Config
 from utils.ocr import image_to_text
 from utils.pdf_reader import pdf_to_text
@@ -30,6 +31,20 @@ os.makedirs(app.config['UPLOAD_PATH'], exist_ok=True)
 
 # Start background cleanup for old files
 start_background_cleanup(app.config['UPLOAD_PATH'], interval_hours=1)
+
+# Initialize AI models in background for faster response
+def preload_ai_models():
+    """Preload AI models in background to reduce first-request latency"""
+    try:
+        from utils.ai_summarizer import get_ai_summarizer
+        print("Preloading AI models...")
+        get_ai_summarizer()
+        print("AI models loaded successfully!")
+    except Exception as e:
+        print(f"Warning: Could not preload AI models: {e}")
+
+# Start model preloading in background thread
+threading.Thread(target=preload_ai_models, daemon=True).start()
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -60,7 +75,24 @@ def index():
 @app.route('/health')
 def health_check():
     """Health check endpoint for monitoring"""
-    return jsonify({"status": "healthy", "service": "autonote"}), 200
+    try:
+        from utils.ai_summarizer import get_ai_summarizer
+        ai_summarizer = get_ai_summarizer()
+        ai_status = "ready" if ai_summarizer.summarizer is not None else "loading"
+    except Exception:
+        ai_status = "fallback"
+    
+    return jsonify({
+        "status": "healthy", 
+        "service": "autonote",
+        "ai_status": ai_status,
+        "features": {
+            "offline_ai": True,
+            "ocr": True,
+            "pdf_processing": True,
+            "docx_processing": True
+        }
+    }), 200
 
 @app.route('/process', methods=['POST'])
 @limiter.limit("10 per minute")

@@ -3,9 +3,9 @@ services:
     name: autonote
     env: python
     region: oregon
-    plan: free
+    plan: starter  # Upgraded from free for AI model memory requirements
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app
+    startCommand: gunicorn app:app --timeout 120 --workers 1 --max-requests 100
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.6
@@ -13,3 +13,9 @@ services:
         generateValue: true
       - key: FLASK_ENV
         value: production
+      - key: TRANSFORMERS_CACHE
+        value: /opt/render/project/.cache
+    disk:
+      name: model-cache
+      mountPath: /opt/render/project/.cache
+      sizeGB: 2

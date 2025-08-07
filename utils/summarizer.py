@@ -1,5 +1,6 @@
 import os
 import requests
+from .ai_summarizer import generate_notes_ai
 
 def simple_text_summarizer(text: str) -> str:
     """Simple fallback summarizer without AI dependencies"""
@@ -22,16 +23,22 @@ def simple_text_summarizer(text: str) -> str:
     return "\n".join(bullet_points) if bullet_points else f"• {text[:200]}..."
 
 def generate_notes(text: str) -> str:
-    """Generate structured notes from text - lightweight version"""
+    """Generate structured notes from text - now with offline AI"""
+    # Try offline AI first (best quality)
     try:
-        # Try OpenAI API if available
+        return generate_notes_ai(text)
+    except Exception as ai_error:
+        print(f"Offline AI failed: {ai_error}")
+    
+    # Try OpenAI API if available (fallback)
+    try:
         openai_key = os.getenv('OPENAI_API_KEY')
         if openai_key:
             return generate_notes_openai(text, openai_key)
-    except Exception as e:
-        print(f"OpenAI API failed: {e}")
+    except Exception as openai_error:
+        print(f"OpenAI API failed: {openai_error}")
     
-    # Fallback to simple summarizer
+    # Final fallback to simple summarizer
     return simple_text_summarizer(text)
 
 def generate_notes_openai(text: str, api_key: str) -> str:

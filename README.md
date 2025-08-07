@@ -1,15 +1,25 @@
 # autonote
 
-A production-ready Flask web application that transforms documents into structured bullet-point notes using AI-powered summarization.
+A production-ready Flask web application that transforms documents into structured bullet-point notes using **offline AI models** with online API fallback.
 
-## Features
+## 🚀 Features
 
-- **Multi-format input support**: Text, PDF, DOCX, and image files (PNG/JPG with OCR)
-- **AI-powered summarization**: Uses OpenAI API for intelligent note generation (with fallback)
-- **Multiple export formats**: Download notes as TXT, MD, PDF, or DOCX
-- **Rate limiting**: 100 requests per day, 10 per minute
-- **Responsive design**: Clean, modern UI with Tailwind CSS
-- **Cloud ready**: Optimized for Render deployment
+- **🤖 Offline-First AI**: Uses local BART/PEGASUS models for summarization (no internet required)
+- **📄 Multi-format input support**: Text, PDF, DOCX, and image files (PNG/JPG with enhanced OCR)
+- **🔍 Advanced OCR**: OpenCV preprocessing for better image text extraction
+- **📊 Smart PDF processing**: Extracts both text and images from PDFs
+- **📤 Multiple export formats**: Download notes as TXT, MD, PDF, or DOCX
+- **⚡ Rate limiting**: 100 requests per day, 10 per minute
+- **🎨 Responsive design**: Clean, modern UI with Tailwind CSS
+- **☁️ Cloud ready**: Optimized for Render deployment
+
+## 🔧 AI Technology Stack
+
+- **Primary**: Facebook BART-large-CNN (offline, high quality)
+- **Fallback**: DistilBART (offline, faster)
+- **Optional**: OpenAI API (online backup)
+- **OCR**: Tesseract with OpenCV preprocessing
+- **PDF**: PyMuPDF with image extraction
 
 ## Supported File Types
 
@@ -19,18 +29,21 @@ A production-ready Flask web application that transforms documents into structur
 - **Images**: PNG/JPG files with OCR text extraction
 - **TXT**: Plain text file upload
 
-## Deployment on Render
+## 🚀 Deployment on Render
 
 1. Fork this repository
 2. Connect your GitHub repository to Render
 3. Use the following settings:
    - **Environment**: Python
+   - **Plan**: Starter (required for AI models)
    - **Build Command**: `pip install -r requirements.txt`
-   - **Start Command**: `gunicorn app:app`
+   - **Start Command**: `gunicorn app:app --timeout 120 --workers 1 --max-requests 100`
 4. Set environment variables in Render dashboard:
    - `SECRET_KEY`: Generate a secure secret key
    - `FLASK_ENV`: Set to `production`
-   - `OPENAI_API_KEY`: (Optional) Your OpenAI API key for better summaries
+   - `OPENAI_API_KEY`: (Optional) Your OpenAI API key for fallback
+
+**Note**: The starter plan ($7/month) is required due to memory requirements of AI models. The free plan has insufficient RAM.
 
 ## Local Development
 
