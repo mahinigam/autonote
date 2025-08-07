@@ -1,7 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="max-w-4xl mx-auto">
-  <h1 class="text-4xl font-bold text-center mb-8 text-gray-800">autonote</h1>
+  <div class="text-center mb-8">
+    <img src="{{ url_for('static', filename='images/autonote-logo.png') }}" 
+         alt="autonote" 
+         class="autonote-logo mx-auto mb-4"
+         onerror="this.style.display='none'; document.getElementById('fallback-title').style.display='block';">
+    <h1 id="fallback-title" class="text-4xl font-bold text-gray-800" style="display: none;">autonote</h1>
+  </div>
   <p class="text-lg text-center text-gray-600 mb-8">
     Transform your documents into structured bullet-point notes using AI
   </p>
