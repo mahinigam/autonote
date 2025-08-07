@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-4xl mx-auto">
+  <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">Generated Notes</h1>
+  
+  {% if notes %}
+    <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+      <h2 class="text-xl font-semibold mb-4 text-gray-700">Your Structured Notes</h2>
+      <div class="prose max-w-none">
+        <pre class="whitespace-pre-wrap text-gray-800 leading-relaxed">{{ notes }}</pre>
+      </div>
+    </div>
+    
+    <div class="bg-gray-50 rounded-lg p-6 mb-8">
+      <h3 class="text-lg font-semibold mb-4 text-gray-700">Download Options</h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a href="/download/{{ file_id }}?format=txt" 
+           class="flex items-center justify-center py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition duration-200 text-sm font-medium">
+          📄 Download .txt
+        </a>
+        <a href="/download/{{ file_id }}?format=md" 
+           class="flex items-center justify-center py-3 px-4 bg-green-600 hover:bg-green-700 text-white rounded-lg transition duration-200 text-sm font-medium">
+          📝 Download .md
+        </a>
+        <a href="/download/{{ file_id }}?format=pdf" 
+           class="flex items-center justify-center py-3 px-4 bg-red-600 hover:bg-red-700 text-white rounded-lg transition duration-200 text-sm font-medium">
+          📋 Download .pdf
+        </a>
+        <a href="/download/{{ file_id }}?format=docx" 
+           class="flex items-center justify-center py-3 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition duration-200 text-sm font-medium">
+          📄 Download .docx
+        </a>
+      </div>
+    </div>
+  {% endif %}
+  
+  {% if original_text %}
+    <details class="bg-white rounded-lg shadow-lg p-6 mb-8">
+      <summary class="cursor-pointer text-lg font-semibold text-gray-700 hover:text-gray-900 select-none">
+        📄 Show Original Extracted Text
+      </summary>
+      <div class="mt-4 p-4 bg-gray-50 rounded-lg border-l-4 border-gray-300">
+        <pre class="whitespace-pre-wrap text-gray-700 text-sm leading-relaxed">{{ original_text }}</pre>
+      </div>
+    </details>
+  {% endif %}
+  
+  <div class="text-center">
+    <a href="/" 
+       class="inline-flex items-center px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition duration-200 font-medium">
+      ← Process Another Document
+    </a>
+  </div>
+</div>
+{% endblock %}
