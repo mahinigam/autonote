@@ -1,12 +1,13 @@
 import os
+import secrets
 from dotenv import load_dotenv
 
 # Load environment variables from .env file (for local development)
 load_dotenv()
 
 class Config:
-    # Security
-    SECRET_KEY = os.getenv('SECRET_KEY', 'fallback-secret-key-change-me')
+    # Security - Generate secure secret key if not provided
+    SECRET_KEY = os.getenv('SECRET_KEY') or secrets.token_urlsafe(32)
     
     # File upload settings
     MAX_CONTENT_LENGTH = 10 * 1024 * 1024  # 10 MB
