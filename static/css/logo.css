@@ -1,8 +1,9 @@
 /* Custom styles for autonote logo */
 .autonote-logo {
-    max-height: 8rem; /* 128px - increased from 96px */
+    max-height: 16rem; /* 256px - doubled from 8rem */
     width: auto;
     transition: transform 0.2s ease-in-out;
+    filter: brightness(1.1) contrast(1.2); /* Enhanced for dark theme */
 }
 
 .autonote-logo:hover {
@@ -12,18 +13,19 @@
 /* Responsive logo sizes */
 @media (max-width: 640px) {
     .autonote-logo {
-        max-height: 6rem; /* 96px on mobile - increased from 64px */
+        max-height: 12rem; /* 192px on mobile - doubled from 6rem */
     }
 }
 
 @media (max-width: 480px) {
     .autonote-logo {
-        max-height: 4rem; /* 64px on small mobile - increased from 48px */
+        max-height: 8rem; /* 128px on small mobile - doubled from 4rem */
     }
 }
 
 /* Alternative logo styling for different themes */
 .autonote-logo-small {
-    max-height: 5rem; /* 80px - increased from 64px */
+    max-height: 10rem; /* 160px - doubled from 5rem */
     width: auto;
+    filter: brightness(1.1) contrast(1.2); /* Enhanced for dark theme */
 }

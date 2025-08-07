@@ -4,11 +4,11 @@ from .ai_summarizer import generate_notes_ai
 def simple_text_summarizer(text: str) -> str:
     """Enhanced fallback summarizer without AI dependencies"""
     if not text or not text.strip():
-        return "📝 **No Content Available**\n\n---\n\n*No text content was found.*"
+        return "**No Content Available**\n\n---\n\n*No text content was found.*"
     
     # Create structured notes even without AI
     lines = []
-    lines.append("# 📚 **STUDY NOTES**")
+    lines.append("# **STUDY NOTES**")
     lines.append("=" * 50)
     lines.append("")
     
@@ -16,13 +16,13 @@ def simple_text_summarizer(text: str) -> str:
     
     # Overview
     if len(text) > 200:
-        lines.append("## 🎯 **OVERVIEW**")
+        lines.append("## **OVERVIEW**")
         overview = text[:300] + "..." if len(text) > 300 else text[:300]
         lines.append(overview)
         lines.append("")
     
     # Key points
-    lines.append("## 📌 **KEY POINTS**")
+    lines.append("## **KEY POINTS**")
     
     if len(sentences) <= 3:
         lines.append(f"• {text.strip()}")
@@ -41,7 +41,7 @@ def simple_text_summarizer(text: str) -> str:
                 lines.append(f"• {sentence.strip()}")
     
     lines.append("")
-    lines.append("## 💡 **SUMMARY**")
+    lines.append("## **SUMMARY**")
     
     if len(sentences) >= 2:
         summary = f"{sentences[0].strip()}. {sentences[-1].strip()}."

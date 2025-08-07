@@ -6,75 +6,75 @@
          alt="autonote" 
          class="autonote-logo mx-auto mb-4"
          onerror="this.style.display='none'; document.getElementById('fallback-title').style.display='block';">
-    <h1 id="fallback-title" class="text-4xl font-bold text-gray-800" style="display: none;">autonote</h1>
+    <h1 id="fallback-title" class="text-4xl font-bold text-primary" style="display: none;">autonote</h1>
   </div>
-  <p class="text-lg text-center text-gray-600 mb-8">
+  <p class="text-lg text-center text-secondary mb-8">
     Transform your documents into comprehensive, structured study notes using AI
   </p>
   
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
       {% for category, message in messages %}
-        <div class="mb-4 p-4 rounded-lg {% if category == 'error' %}bg-red-100 text-red-700 border border-red-300{% else %}bg-green-100 text-green-700 border border-green-300{% endif %}">
-          {{ message }}
+        <div class="mb-4 p-4 rounded-lg glass {% if category == 'error' %}border-red-400{% else %}border-green-400{% endif %}">
+          <span class="{% if category == 'error' %}text-red-300{% else %}text-green-300{% endif %} font-semibold">{{ message }}</span>
         </div>
       {% endfor %}
     {% endif %}
   {% endwith %}
   
-  <form method="post" action="/process" enctype="multipart/form-data" class="bg-white rounded-lg shadow-lg p-8 space-y-6">
+  <form method="post" action="/process" enctype="multipart/form-data" class="glass-card rounded-lg p-8 space-y-6">
     <div>
-      <label for="text" class="block text-lg font-medium text-gray-700 mb-2">Paste your text here</label>
+      <label for="text" class="block text-lg font-medium text-primary mb-2">Paste your text here</label>
       <textarea 
         name="text" 
         id="text"
         rows="8" 
         placeholder="Enter your text content here..."
-        class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical"
+        class="w-full p-4 rounded-lg glass-input focus:ring-2 focus:ring-white/30 focus:border-white/40 resize-vertical"
       ></textarea>
     </div>
     
-    <div class="text-center text-gray-500 font-medium">OR</div>
+    <div class="text-center text-secondary font-medium">OR</div>
     
     <div>
-      <label for="file" class="block text-lg font-medium text-gray-700 mb-2">Upload a file</label>
+      <label for="file" class="block text-lg font-medium text-primary mb-2">Upload a file</label>
       <input 
         type="file" 
         name="file" 
         id="file"
         accept=".txt,.pdf,.docx,.png,.jpg,.jpeg"
-        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+        class="w-full p-3 rounded-lg glass-input focus:ring-2 focus:ring-white/30 focus:border-white/40 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-white/20 file:text-white hover:file:bg-white/30"
       >
-      <p class="mt-2 text-sm text-gray-500">
+      <p class="mt-2 text-sm text-muted">
         Supported formats: PDF, DOCX, TXT, PNG, JPG (max 10MB)
       </p>
     </div>
     
     <div>
-      <label for="note_style" class="block text-lg font-medium text-gray-700 mb-2">Note Style</label>
+      <label for="note_style" class="block text-lg font-medium text-primary mb-2">Note Style</label>
       <select 
         name="note_style" 
         id="note_style"
-        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        class="w-full p-3 rounded-lg glass-input focus:ring-2 focus:ring-white/30 focus:border-white/40"
       >
-        <option value="structured">📚 Structured Study Notes (Recommended)</option>
-        <option value="bullet">• Simple Bullet Points</option>
-        <option value="detailed">📖 Detailed Analysis</option>
+        <option value="structured">Structured Study Notes (Recommended)</option>
+        <option value="bullet">Simple Bullet Points</option>
+        <option value="detailed">Detailed Analysis</option>
       </select>
-      <p class="mt-2 text-sm text-gray-500">
+      <p class="mt-2 text-sm text-muted">
         Choose how you want your notes formatted
       </p>
     </div>
     
     <button 
       type="submit" 
-      class="w-full py-4 px-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition duration-200 transform hover:scale-105 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+      class="w-full py-4 px-6 electric-green-button text-black font-semibold rounded-lg"
     >
       Generate Notes
     </button>
   </form>
   
-  <div class="mt-8 text-center text-sm text-gray-500">
+  <div class="mt-8 text-center text-sm text-muted">
     <p>Your documents are processed securely and not stored permanently.</p>
   </div>
 </div>

@@ -5,6 +5,7 @@ from werkzeug.utils import secure_filename
 import os
 import uuid
 import threading
+import markdown
 from config import Config
 from utils.ocr import image_to_text
 from utils.pdf_reader import pdf_to_text
@@ -155,8 +156,12 @@ def process():
         save_as_pdf(notes, file_id, app.config['UPLOAD_PATH'])
         save_as_docx(notes, file_id, app.config['UPLOAD_PATH'])
         
+        # Convert markdown notes to HTML for better display
+        notes_html = markdown.markdown(notes)
+        
         return render_template('result.html', 
-                             notes=notes, 
+                             notes=notes,
+                             notes_html=notes_html, 
                              original_text=extracted_text, 
                              file_id=file_id)
     

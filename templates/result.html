@@ -6,55 +6,51 @@
          alt="autonote" 
          class="autonote-logo-small mx-auto mb-2"
          onerror="this.style.display='none'; document.getElementById('result-fallback-title').style.display='block';">
-    <h1 id="result-fallback-title" class="text-3xl font-bold text-gray-800" style="display: none;">Generated Notes</h1>
-    <h2 class="text-xl text-gray-600">Generated Notes</h2>
+    <h1 id="result-fallback-title" class="text-3xl font-bold text-primary" style="display: none;">Generated Notes</h1>
+    <h2 class="text-xl text-secondary">Generated Notes</h2>
   </div>
   
   {% if notes %}
-    <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
-      <h2 class="text-xl font-semibold mb-4 text-gray-700">Your Structured Notes</h2>
-      <div class="prose max-w-none">
-        <pre class="whitespace-pre-wrap text-gray-800 leading-relaxed">{{ notes }}</pre>
+    <div class="glass-card rounded-lg p-8 mb-8">
+      <h2 class="text-xl font-semibold mb-4 text-primary">Your Structured Notes</h2>
+      <div class="markdown-content">
+        {{ notes_html|safe }}
       </div>
     </div>
     
-    <div class="bg-gray-50 rounded-lg p-6 mb-8">
-      <h3 class="text-lg font-semibold mb-4 text-gray-700">Download Options</h3>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="glass rounded-lg p-6 mb-8">
+      <h3 class="text-lg font-semibold mb-4 text-primary">Download Options</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <a href="/download/{{ file_id }}?format=txt" 
-           class="flex items-center justify-center py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition duration-200 text-sm font-medium">
-          📄 Download .txt
-        </a>
-        <a href="/download/{{ file_id }}?format=md" 
-           class="flex items-center justify-center py-3 px-4 bg-green-600 hover:bg-green-700 text-white rounded-lg transition duration-200 text-sm font-medium">
-          📝 Download .md
+           class="flex items-center justify-center py-3 px-4 glass-button text-white rounded-lg text-sm font-medium">
+          Download .txt
         </a>
         <a href="/download/{{ file_id }}?format=pdf" 
-           class="flex items-center justify-center py-3 px-4 bg-red-600 hover:bg-red-700 text-white rounded-lg transition duration-200 text-sm font-medium">
-          📋 Download .pdf
+           class="flex items-center justify-center py-3 px-4 glass-button text-white rounded-lg text-sm font-medium">
+          Download .pdf
         </a>
         <a href="/download/{{ file_id }}?format=docx" 
-           class="flex items-center justify-center py-3 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition duration-200 text-sm font-medium">
-          📄 Download .docx
+           class="flex items-center justify-center py-3 px-4 glass-button text-white rounded-lg text-sm font-medium">
+          Download .docx
         </a>
       </div>
     </div>
   {% endif %}
   
   {% if original_text %}
-    <details class="bg-white rounded-lg shadow-lg p-6 mb-8">
-      <summary class="cursor-pointer text-lg font-semibold text-gray-700 hover:text-gray-900 select-none">
-        📄 Show Original Extracted Text
+    <details class="glass-card rounded-lg p-6 mb-8">
+      <summary class="cursor-pointer text-lg font-semibold text-primary hover:text-white select-none">
+        Show Original Extracted Text
       </summary>
-      <div class="mt-4 p-4 bg-gray-50 rounded-lg border-l-4 border-gray-300">
-        <pre class="whitespace-pre-wrap text-gray-700 text-sm leading-relaxed">{{ original_text }}</pre>
+      <div class="mt-4 p-4 glass rounded-lg border-l-4 border-white/60">
+        <pre class="whitespace-pre-wrap text-sm leading-relaxed" style="color: #ffffff; font-weight: 500;">{{ original_text }}</pre>
       </div>
     </details>
   {% endif %}
   
   <div class="text-center">
     <a href="/" 
-       class="inline-flex items-center px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition duration-200 font-medium">
+       class="inline-flex items-center px-6 py-3 red-button text-white rounded-lg font-medium">
       ← Process Another Document
     </a>
   </div>

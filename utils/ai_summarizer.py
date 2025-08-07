@@ -119,7 +119,7 @@ class OfflineAISummarizer:
     def _create_structured_notes(self, text: str, use_ai: bool = True, note_style: str = "structured") -> str:
         """Create comprehensive structured notes from text"""
         if not text or not text.strip():
-            return "📝 **No Content Available**\n\n---\n\n*No text content was found in the document.*"
+            return "**No Content Available**\n\n---\n\n*No text content was found in the document.*"
         
         if note_style == "bullet":
             return self._create_bullet_notes(text)
@@ -146,18 +146,18 @@ class OfflineAISummarizer:
     def _create_detailed_analysis(self, text: str) -> str:
         """Create detailed analysis-style notes"""
         lines = []
-        lines.append("# 📖 **DETAILED ANALYSIS**")
+        lines.append("# **DETAILED ANALYSIS**")
         lines.append("=" * 60)
         lines.append("")
         
         # Executive Summary
-        lines.append("## 🎯 **EXECUTIVE SUMMARY**")
+        lines.append("## **EXECUTIVE SUMMARY**")
         summary = self._create_executive_summary(text)
         lines.append(summary)
         lines.append("")
         
         # Content Analysis
-        lines.append("## 🔍 **CONTENT ANALYSIS**")
+        lines.append("## **CONTENT ANALYSIS**")
         key_points = self._extract_key_points(text)
         for i, point in enumerate(key_points, 1):
             lines.append(f"**{i}.** {point}")
@@ -166,13 +166,13 @@ class OfflineAISummarizer:
         # Themes and Topics
         main_topics = self._identify_main_topics(text)
         if main_topics:
-            lines.append("## 📋 **MAIN THEMES**")
+            lines.append("## **MAIN THEMES**")
             for topic in main_topics:
                 lines.append(f"→ {topic}")
             lines.append("")
         
         # Detailed Breakdown
-        lines.append("## 📚 **DETAILED BREAKDOWN**")
+        lines.append("## **DETAILED BREAKDOWN**")
         paragraphs = text.split('\n')
         for i, para in enumerate(paragraphs[:5], 1):  # Limit to 5 paragraphs
             if para.strip():
@@ -181,14 +181,14 @@ class OfflineAISummarizer:
                 lines.append("")
         
         # Key Insights
-        lines.append("## 💡 **KEY INSIGHTS**")
+        lines.append("## **KEY INSIGHTS**")
         insights = self._extract_insights(text)
         for insight in insights:
             lines.append(f"✓ {insight}")
         lines.append("")
         
         # Conclusion
-        lines.append("## 🏁 **CONCLUSION**")
+        lines.append("## **CONCLUSION**")
         conclusion = self._create_conclusion(text)
         lines.append(conclusion)
         lines.append("")
@@ -206,38 +206,38 @@ class OfflineAISummarizer:
         
         # Build structured notes
         notes = []
-        notes.append("# 📚 **STUDY NOTES**")
+        notes.append("# **STUDY NOTES**")
         notes.append("=" * 50)
         notes.append("")
         
         # Overview section
         if len(text) > 200:
             overview = self._create_overview(text)
-            notes.append("## 🎯 **OVERVIEW**")
+            notes.append("## **OVERVIEW**")
             notes.append(overview)
             notes.append("")
         
         # Main topics section
         if main_topics:
-            notes.append("## 📋 **KEY TOPICS**")
+            notes.append("## **KEY TOPICS**")
             for i, topic in enumerate(main_topics, 1):
                 notes.append(f"**{i}.** {topic}")
             notes.append("")
         
         # Detailed points section
-        notes.append("## 📌 **IMPORTANT POINTS**")
+        notes.append("## **IMPORTANT POINTS**")
         for point in key_points:
             notes.append(f"• {point}")
         notes.append("")
         
         # Summary section
         summary = self._create_executive_summary(text)
-        notes.append("## 💡 **SUMMARY**")
+        notes.append("## **SUMMARY**")
         notes.append(summary)
         notes.append("")
         
         # Study tips
-        notes.append("## 🎓 **STUDY TIPS**")
+        notes.append("## **STUDY RECOMMENDATIONS**")
         notes.append("• Review the key topics regularly")
         notes.append("• Focus on understanding the main concepts")
         notes.append("• Create your own examples for better retention")
@@ -293,7 +293,7 @@ class OfflineAISummarizer:
         if note_style == "bullet":
             return f"• {cleaned_text}"
         elif note_style == "structured":
-            return f"## 📝 **Quick Note**\n\n{cleaned_text}\n\n---\n*Short content summary*"
+            return f"## **Quick Note**\n\n{cleaned_text}\n\n---\n*Short content summary*"
         else:
             return cleaned_text
     
@@ -380,7 +380,7 @@ class OfflineAISummarizer:
     def _simple_fallback_summary(self, text: str, note_style: str = "structured") -> str:
         """Enhanced fallback when AI models fail"""
         if not text or not text.strip():
-            return "📝 **No Content Available**\n\n---\n\n*No text content was found.*"
+            return "**No Content Available**\n\n---\n\n*No text content was found.*"
         
         # Use the structured notes method even for fallback
         return self._create_structured_notes(text, use_ai=False, note_style=note_style)
