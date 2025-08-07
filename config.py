@@ -22,7 +22,16 @@ class Config:
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = 'Lax'
     
+    # AI Service Configuration
+    GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+    
     # Ensure downloads directory exists
     @classmethod
     def init_app(cls, app):
         os.makedirs(cls.UPLOAD_PATH, exist_ok=True)
+        
+        # Log AI service status
+        if cls.GEMINI_API_KEY:
+            print("Google Gemini API key configured")
+        else:
+            print("GEMINI_API_KEY not found - AI features will use fallback mode")

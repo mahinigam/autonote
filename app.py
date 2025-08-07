@@ -34,19 +34,12 @@ os.makedirs(app.config['UPLOAD_PATH'], exist_ok=True)
 # Start background cleanup for old files
 start_background_cleanup(app.config['UPLOAD_PATH'], interval_hours=1)
 
-# Initialize AI models in background for faster response
-def preload_ai_models():
-    """Preload AI models in background to reduce first-request latency"""
-    try:
-        from utils.ai_summarizer import get_ai_summarizer
-        print("Preloading AI models...")
-        get_ai_summarizer()
-        print("AI models loaded successfully!")
-    except Exception as e:
-        print(f"Warning: Could not preload AI models: {e}")
-
-# Start model preloading in background thread
-threading.Thread(target=preload_ai_models, daemon=True).start()
+# Initialize Online AI service
+print("AutoNote configured for online AI services")
+if os.getenv('GEMINI_API_KEY'):
+    print("Google Gemini API configured - all AI features available")
+else:
+    print("GEMINI_API_KEY not found - AI features will use fallback mode")
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -78,9 +71,9 @@ def index():
 def health_check():
     """Health check endpoint for monitoring"""
     try:
-        from utils.ai_summarizer import get_ai_summarizer
-        ai_summarizer = get_ai_summarizer()
-        ai_status = "ready" if ai_summarizer.summarizer is not None else "loading"
+        from utils.online_ai import get_online_ai
+        online_ai = get_online_ai()
+        ai_status = "ready" if online_ai.is_initialized else "fallback"
     except Exception:
         ai_status = "fallback"
     
@@ -89,11 +82,11 @@ def health_check():
         "service": "autonote",
         "ai_status": ai_status,
         "features": {
-            "offline_ai": True,
+            "online_ai": True,
             "ocr": True,
             "pdf_processing": True,
             "docx_processing": True,
-            "completely_offline": True
+            "cloud_powered": True
         }
     }), 200
 

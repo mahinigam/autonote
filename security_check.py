@@ -1,7 +1,30 @@
 #!/usr/bin/env python3
 """
-Security verification script for autonote
-Checks if the application is properly configured with secure settings
+Security verification script for adef check_adef check_ai_configuration():
+    """Check AI-related configuration"""
+    print("\nChecking AI configuration...")
+    
+    api_key = os.getenv('GEMINI_API_KEY')
+    if api_key:
+        print("✅ Google Gemini API key configured")
+        print("🌐 Online AI operation enabled")
+    else:
+        print("❌ GEMINI_API_KEY not found in environment")
+        print("Please set your Google Gemini API key in .env file")
+    
+    return api_key is not Noneration():
+    """Check AI-related configuration"""
+    print("\nChecking AI configuration...")
+    
+    api_key = os.getenv('GEMINI_API_KEY')
+    if api_key:
+        print("✅ Google Gemini API key configured")
+        print("🌐 Online AI operation enabled")
+    else:
+        print("❌ GEMINI_API_KEY not found in environment")
+        print("Please set your Google Gemini API key in .env file")
+    
+    return api_key is not NoneChecks if the application is properly configured with secure settings
 """
 
 import os

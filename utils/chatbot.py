@@ -1,6 +1,5 @@
 import os
-import torch
-from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
+from .online_ai import get_online_ai, chat_with_document_online
 from typing import Optional, List, Dict, Union, Any
 import logging
 import re
@@ -10,218 +9,136 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class DocumentChatbot:
-    """Interactive chatbot for document-based Q&A and content manipulation"""
+    """Interactive chatbot for document-based Q&A using online AI"""
     
     def __init__(self):
-        self.qa_pipeline = None
-        self.text_generator = None
-        self.model_name = "microsoft/DialoGPT-medium"  # Conversational model
-        self.qa_model_name = "deepset/roberta-base-squad2"  # Q&A model
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        self.conversation_history = []
         self.source_document = ""
-        self._initialize_models()
-    
-    def _initialize_models(self):
-        """Initialize the chatbot models with fallback"""
-        try:
-            logger.info("Loading chatbot models...")
-            
-            # Initialize Q&A pipeline for document questions
-            self.qa_pipeline = pipeline(
-                "question-answering",
-                model=self.qa_model_name,
-                device=0 if self.device == "cuda" else -1
-            )
-            
-            # Initialize text generation for creative tasks
-            self.text_generator = pipeline(
-                "text-generation",
-                model=self.model_name,
-                device=0 if self.device == "cuda" else -1,
-                pad_token_id=50256
-            )
-            
-            logger.info("Chatbot models loaded successfully")
-        except Exception as e:
-            logger.error(f"Failed to load chatbot models: {e}")
-            self.qa_pipeline = None
-            self.text_generator = None
+        self.online_ai = get_online_ai()
+        logger.info("DocumentChatbot initialized with online AI")
     
     def set_source_document(self, document_text: str):
-        """Set the source document for the chatbot to reference"""
+        """Set the source document for Q&A"""
         self.source_document = document_text
-        self.conversation_history = []
+        logger.info(f"Document set ({len(document_text)} characters)")
     
     def answer_question(self, question: str) -> str:
-        """Answer questions about the source document"""
+        """Answer questions about the document using online AI"""
         if not self.source_document:
-            return "No source document available. Please provide a document first."
+            return "No document loaded. Please upload a document first to ask questions about it."
         
-        # Detect question type and route accordingly
+        if not question or not question.strip():
+            return "Please ask a specific question about the document, and I'll help you find the answer."
+        
+        # Check for special commands
         if self._is_table_request(question):
-            return self._create_table_from_text(question)
-        elif self._is_summary_request(question):
-            return self._create_custom_summary(question)
+            return self._generate_table(question)
         elif self._is_list_request(question):
-            return self._create_list_from_text(question)
-        else:
-            return self._answer_direct_question(question)
-    
-    def _answer_direct_question(self, question: str) -> str:
-        """Answer direct questions using Q&A model"""
-        if not self.qa_pipeline:
-            return self._fallback_answer(question)
+            return self._generate_list(question)
         
+        # Use online AI for Q&A
         try:
-            # Limit context length for better performance
             context = self.source_document[:2000] if len(self.source_document) > 2000 else self.source_document
-            
-            result = self.qa_pipeline(question=question, context=context)
-            
-            # Handle the result properly - it should be a dictionary
-            if isinstance(result, dict) and 'score' in result and 'answer' in result:
-                confidence = result['score']
-                
-                if confidence > 0.3:
-                    answer = result['answer']
-                    return f"**Answer:** {answer}\n\n*Confidence: {confidence:.2%}*"
-                else:
-                    return self._fallback_answer(question)
-            else:
-                return self._fallback_answer(question)
-                
+            response = self.online_ai.chat_response(question, context)
+            return response
         except Exception as e:
-            logger.error(f"Q&A error: {e}")
+            logger.error(f"Online AI Q&A error: {e}")
             return self._fallback_answer(question)
-    
-    def _is_table_request(self, question: str) -> bool:
-        """Check if user is requesting a table"""
-        table_keywords = ['table', 'chart', 'organize', 'tabulate', 'columns', 'rows']
-        return any(keyword in question.lower() for keyword in table_keywords)
-    
-    def _is_summary_request(self, question: str) -> bool:
-        """Check if user is requesting a summary"""
-        summary_keywords = ['summarize', 'summary', 'brief', 'overview', 'main points']
-        return any(keyword in question.lower() for keyword in summary_keywords)
-    
-    def _is_list_request(self, question: str) -> bool:
-        """Check if user is requesting a list"""
-        list_keywords = ['list', 'bullet points', 'enumerate', 'items', 'steps']
-        return any(keyword in question.lower() for keyword in list_keywords)
-    
-    def _create_table_from_text(self, request: str) -> str:
-        """Create a table from available information"""
-        # Extract key information from the document
-        sentences = self.source_document.split('.')
-        data_points = []
-        
-        for sentence in sentences:
-            sentence = sentence.strip()
-            if len(sentence) > 20 and any(word in sentence.lower() for word in ['is', 'are', 'has', 'have', 'contains']):
-                data_points.append(sentence)
-        
-        if not data_points:
-            return "I couldn't find enough structured data to create a meaningful table from the source document."
-        
-        # Create a simple table
-        table = "| **Topic** | **Information** |\n"
-        table += "|-----------|----------------|\n"
-        
-        for i, point in enumerate(data_points[:10], 1):  # Limit to 10 rows
-            topic = f"Point {i}"
-            info = point[:100] + "..." if len(point) > 100 else point
-            table += f"| {topic} | {info} |\n"
-        
-        return f"**Generated Table:**\n\n{table}\n\n*Table created from available information in the source document.*"
-    
-    def _create_custom_summary(self, request: str) -> str:
-        """Create a custom summary based on the request"""
-        sentences = self.source_document.split('.')
-        
-        # Extract key sentences
-        key_sentences = []
-        for sentence in sentences:
-            sentence = sentence.strip()
-            if 30 <= len(sentence) <= 200:
-                key_sentences.append(sentence)
-        
-        if len(key_sentences) < 3:
-            return "The document is too short for a meaningful summary."
-        
-        # Create summary
-        summary = "**Custom Summary:**\n\n"
-        summary += f"• {key_sentences[0]}\n"
-        summary += f"• {key_sentences[len(key_sentences)//2]}\n"
-        summary += f"• {key_sentences[-1]}\n\n"
-        summary += "*Summary generated based on your request.*"
-        
-        return summary
-    
-    def _create_list_from_text(self, request: str) -> str:
-        """Create a list from the document content"""
-        sentences = self.source_document.split('.')
-        items = []
-        
-        for sentence in sentences:
-            sentence = sentence.strip()
-            if 20 <= len(sentence) <= 150:
-                items.append(sentence)
-        
-        if not items:
-            return "I couldn't extract meaningful list items from the source document."
-        
-        result = "**Generated List:**\n\n"
-        for i, item in enumerate(items[:8], 1):  # Limit to 8 items
-            result += f"{i}. {item}\n"
-        
-        result += "\n*List created from source document content.*"
-        return result
-    
-    def _fallback_answer(self, question: str) -> str:
-        """Fallback answer when AI models fail"""
-        # Simple keyword-based responses
-        question_lower = question.lower()
-        
-        if any(word in question_lower for word in ['what', 'explain', 'describe']):
-            # Find relevant sentences
-            sentences = self.source_document.split('.')
-            relevant = []
-            
-            question_words = question_lower.split()
-            for sentence in sentences:
-                if any(word in sentence.lower() for word in question_words if len(word) > 3):
-                    relevant.append(sentence.strip())
-            
-            if relevant:
-                return f"**Based on the document:** {relevant[0][:200]}..."
-            else:
-                return "I couldn't find specific information about that in the source document."
-        
-        elif any(word in question_lower for word in ['how many', 'count']):
-            sentences = len(self.source_document.split('.'))
-            words = len(self.source_document.split())
-            return f"**Document Statistics:**\n• Sentences: {sentences}\n• Words: {words}\n• Characters: {len(self.source_document)}"
-        
-        else:
-            return "I'm here to help you with questions about the source document. Try asking about specific topics mentioned in the text."
     
     def get_suggestions(self) -> List[str]:
-        """Get conversation starter suggestions based on the document"""
+        """Get conversation suggestions based on the document"""
         if not self.source_document:
-            return ["Upload a document first to start chatting!"]
+            return [
+                "Upload a document to get started",
+                "What types of files can I upload?",
+                "How does the AI analysis work?",
+                "What can I ask about my documents?"
+            ]
         
-        suggestions = [
-            "What are the main topics in this document?",
-            "Can you create a table from this information?",
-            "Summarize the key points for me",
-            "What are the most important facts?",
-            "Create a numbered list of main ideas"
-        ]
+        try:
+            return self.online_ai.get_suggestions(self.source_document)
+        except Exception as e:
+            logger.error(f"Suggestion generation error: {e}")
+            return self._default_suggestions()
+    
+    def _is_table_request(self, question: str) -> bool:
+        """Check if the user is requesting a table"""
+        table_keywords = ['table', 'chart', 'organize', 'tabulate', 'compare', 'matrix']
+        return any(keyword in question.lower() for keyword in table_keywords)
+    
+    def _is_list_request(self, question: str) -> bool:
+        """Check if the user is requesting a list"""
+        list_keywords = ['list', 'bullet', 'points', 'items', 'enumerate', 'outline']
+        return any(keyword in question.lower() for keyword in list_keywords)
+    
+    def _generate_table(self, question: str) -> str:
+        """Generate a table based on the request"""
+        try:
+            table_prompt = f"""
+            Based on this document and the user's request, create a well-formatted markdown table:
+            
+            Document: {self.source_document[:1000]}...
+            
+            User Request: {question}
+            
+            Create a clear, organized table that addresses their request. Use proper markdown table formatting.
+            """
+            
+            response = self.online_ai.chat_response(table_prompt, self.source_document)
+            return f"**Table Generated:**\n\n{response}"
+        except Exception as e:
+            logger.error(f"Table generation error: {e}")
+            return "Sorry, I couldn't generate a table. Please try rephrasing your request or check the AI service connection."
+    
+    def _generate_list(self, question: str) -> str:
+        """Generate a list based on the request"""
+        try:
+            list_prompt = f"""
+            Based on this document and the user's request, create a well-formatted list:
+            
+            Document: {self.source_document[:1000]}...
+            
+            User Request: {question}
+            
+            Create a clear, organized list that addresses their request. Use bullet points or numbers as appropriate.
+            """
+            
+            response = self.online_ai.chat_response(list_prompt, self.source_document)
+            return f"**List Generated:**\n\n{response}"
+        except Exception as e:
+            logger.error(f"List generation error: {e}")
+            return "Sorry, I couldn't generate a list. Please try rephrasing your request or check the AI service connection."
+    
+    def _fallback_answer(self, question: str) -> str:
+        """Provide fallback response when AI is unavailable"""
+        if 'summary' in question.lower() or 'summarize' in question.lower():
+            # Basic summary from first few sentences
+            sentences = self.source_document.split('.')[:3]
+            summary = '. '.join(sentences).strip()
+            return f"**Basic Summary:** {summary}...\n\n*(AI service unavailable - showing basic extraction)*"
         
-        return suggestions
+        return """**AI Service Unavailable**
+        
+I'm currently unable to process your question due to AI service limitations. 
 
-# Global chatbot instance
+**What you can try:**
+• Check your internet connection
+• Verify API configuration  
+• Try a simpler question
+• Upload a smaller document
+
+**Tip:** The AI service will be back online once the connection is restored."""
+    
+    def _default_suggestions(self) -> List[str]:
+        """Default suggestions when AI is unavailable"""
+        return [
+            "What are the main topics covered?",
+            "Can you summarize this document?",
+            "List the key points",
+            "Create a table of important information"
+        ]
+
+
+# Global instance
 _document_chatbot = None
 
 def get_chatbot() -> DocumentChatbot:

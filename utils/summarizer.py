@@ -1,5 +1,5 @@
 import os
-from .ai_summarizer import generate_notes_ai
+from .online_ai import generate_notes_online
 
 def simple_text_summarizer(text: str) -> str:
     """Enhanced fallback summarizer without AI dependencies"""
@@ -56,12 +56,12 @@ def simple_text_summarizer(text: str) -> str:
     return "\n".join(lines)
 
 def generate_notes(text: str, note_style: str = "structured") -> str:
-    """Generate comprehensive structured notes from text using offline AI"""
-    # Try offline AI first (primary method)
+    """Generate comprehensive structured notes from text using online AI"""
+    # Try online AI first (primary method)
     try:
-        return generate_notes_ai(text, note_style=note_style)
+        return generate_notes_online(text, note_type=note_style)
     except Exception as ai_error:
-        print(f"Offline AI failed: {ai_error}")
+        print(f"Online AI failed: {ai_error}")
     
     # Fallback to enhanced simple summarizer
     return simple_text_summarizer(text)
