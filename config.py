@@ -8,7 +8,9 @@ class Config:
     MAX_CONTENT_LENGTH = 10 * 1024 * 1024  # 10 MB
     UPLOAD_EXTENSIONS = ['.txt', '.pdf', '.docx', '.png', '.jpg', '.jpeg']
     UPLOAD_PATH = 'downloads'
-    MODEL_NAME = os.getenv('MODEL_NAME', 'sshleifer/distilbart-cnn-12-6')
+    
+    # OpenAI API configuration (optional)
+    OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
     
     # Flask-Limiter configuration
     RATELIMIT_STORAGE_URL = 'memory://'

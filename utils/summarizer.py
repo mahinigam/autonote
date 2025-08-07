@@ -1,125 +1,69 @@
-from transformers import pipeline
 import os
-import re
-
-MODEL = os.getenv("MODEL_NAME", "sshleifer/distilbart-cnn-12-6")
-
-# Initialize the summarizer pipeline once
-summarizer = None
-use_fallback = False
-
-try:
-    summarizer = pipeline("summarization", model=MODEL)
-except Exception as e:
-    print(f"Error loading model {MODEL}: {e}")
-    try:
-        # Try a smaller, more reliable model
-        summarizer = pipeline("summarization", model="sshleifer/distilbart-cnn-6-6")
-    except Exception as e2:
-        print(f"Error loading fallback model: {e2}")
-        # Set flag to use simple text processing fallback
-        use_fallback = True
+import requests
+from typing import List
 
 def simple_text_summarizer(text: str) -> str:
-    """Simple fallback summarizer using basic text processing"""
-    sentences = re.split(r'[.!?]+', text)
-    # Filter out very short sentences
-    meaningful_sentences = [s.strip() for s in sentences if len(s.strip()) > 20]
+    """Simple fallback summarizer without AI dependencies"""
+    sentences = text.split('.')
+    if len(sentences) <= 3:
+        return f"• {text.strip()}"
     
-    # Take first few sentences and key sentences
-    summary_sentences = []
+    # Take first and last few sentences as summary
+    summary_sentences = sentences[:2] + sentences[-1:]
+    bullet_points = []
     
-    # Add first sentence
-    if meaningful_sentences:
-        summary_sentences.append(meaningful_sentences[0])
-    
-    # Add sentences with important keywords
-    keywords = ['important', 'key', 'main', 'significant', 'crucial', 'essential', 'primary']
-    for sentence in meaningful_sentences[1:]:
-        if any(keyword in sentence.lower() for keyword in keywords):
-            summary_sentences.append(sentence)
-        if len(summary_sentences) >= 5:
-            break
-    
-    # If still short, add more sentences
-    if len(summary_sentences) < 3 and len(meaningful_sentences) > len(summary_sentences):
-        remaining_sentences = meaningful_sentences[len(summary_sentences):len(summary_sentences)+3]
-        summary_sentences.extend(remaining_sentences)
-    
-    # Format as bullet points
-    bullet_notes = "\n".join([f"• {sentence.strip()}." for sentence in summary_sentences])
-    return bullet_notes
+    for sentence in summary_sentences:
+        cleaned = sentence.strip()
+        if cleaned and len(cleaned) > 10:
+            bullet_points.append(f"• {cleaned}")
 
-def chunk_text(text: str, max_chunk_size: int = 1000) -> list:
-    """Split text into smaller chunks for processing"""
-    words = text.split()
-    chunks = []
-    current_chunk = []
-    current_size = 0
-    
-    for word in words:
-        current_chunk.append(word)
-        current_size += len(word) + 1  # +1 for space
-        
-        if current_size >= max_chunk_size:
-            chunks.append(' '.join(current_chunk))
-            current_chunk = []
-            current_size = 0
-    
-    if current_chunk:
-        chunks.append(' '.join(current_chunk))
-    
-    return chunks
+    return "\n".join(bullet_points) if bullet_points else f"• {text[:200]}..."
 
-def generate_notes(text: str, max_length: int = 200, min_length: int = 50) -> str:
-    """Generate structured bullet-point notes from text"""
-    if not text.strip():
-        return "No content provided for summarization."
-    
-    # Use fallback if AI models aren't available
-    if use_fallback or summarizer is None:
-        return simple_text_summarizer(text)
-    
+def generate_notes(text: str) -> str:
+    """Generate structured notes from text - lightweight version"""
     try:
-        # Handle long texts by chunking
-        if len(text) > 1000:
-            chunks = chunk_text(text, 900)
-            summaries = []
-            
-            for chunk in chunks:
-                if len(chunk.strip()) < 50:  # Skip very short chunks
-                    continue
-                    
-                chunk_summary = summarizer(
-                    chunk, 
-                    max_length=min(max_length, len(chunk.split()) // 2), 
-                    min_length=min(min_length, len(chunk.split()) // 4),
-                    do_sample=False
-                )
-                summaries.append(chunk_summary[0]["summary_text"])
-            
-            # Combine summaries and format as bullet points
-            combined_notes = "\n".join([f"• {summary}" for summary in summaries])
-            return combined_notes
-        
-        else:
-            # For shorter texts, process directly
-            summary = summarizer(
-                text, 
-                max_length=max_length, 
-                min_length=min_length, 
-                do_sample=False
-            )
-            
-            # Format as bullet points
-            summary_text = summary[0]["summary_text"]
-            # Split by sentences and format as bullet points
-            sentences = [s.strip() for s in summary_text.split('.') if s.strip()]
-            bullet_notes = "\n".join([f"• {sentence}." for sentence in sentences])
-            
-            return bullet_notes
-            
+        # Try OpenAI API if available
+        openai_key = os.getenv('OPENAI_API_KEY')
+        if openai_key:
+            return generate_notes_openai(text, openai_key)
     except Exception as e:
-        # Fallback to simple summarizer if AI model fails
-        print(f"AI summarization failed, using fallback: {e}")
-        return simple_text_summarizer(text)
+        print(f"OpenAI API failed: {e}")
+    
+    # Fallback to simple summarizer
+    return simple_text_summarizer(text)
+
+def generate_notes_openai(text: str, api_key: str) -> str:
+    """Generate notes using OpenAI API"""
+    headers = {
+        'Authorization': f'Bearer {api_key}',
+        'Content-Type': 'application/json'
+    }
+    
+    data = {
+        'model': 'gpt-3.5-turbo',
+        'messages': [
+            {
+                'role': 'system',
+                'content': 'Convert the following text into structured bullet points. Focus on key information and main ideas. Format as bullet points using •'
+            },
+            {
+                'role': 'user',
+                'content': text[:4000]  # Limit text length
+            }
+        ],
+        'max_tokens': 500,
+        'temperature': 0.3
+    }
+    
+    response = requests.post(
+        'https://api.openai.com/v1/chat/completions',
+        headers=headers,
+        json=data,
+        timeout=30
+    )
+    
+    if response.status_code == 200:
+        result = response.json()
+        return result['choices'][0]['message']['content']
+    else:
+        raise Exception(f"OpenAI API error: {response.status_code}")
