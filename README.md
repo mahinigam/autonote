@@ -30,8 +30,7 @@ Visit `http://localhost:5000`
 ## Features
 
 - **Google Gemini AI**: Advanced note generation with cloud AI
-- **Multi-format Support**: PDF, DOCX, images (PNG/JPG), and text
-- **Smart OCR**: Advanced image text extraction with Tesseract
+- **Multi-format Support**: PDF, DOCX, and text files
 - **Interactive Chatbot**: Ask questions about your documents
 - **Smart Formatting**: Tables, lists, and structured notes
 - **Multiple Exports**: TXT, PDF, DOCX download options
@@ -43,11 +42,9 @@ Visit `http://localhost:5000`
 - **Flask**: Web framework for the application
 - **Flask-Limiter**: Rate limiting and security
 - **google-generativeai**: Google Gemini AI integration
-- **pytesseract**: OCR for image text extraction
 - **PyMuPDF**: PDF processing and text extraction
 - **python-docx**: Microsoft Word document processing
 - **reportlab**: PDF generation for exports
-- **Pillow**: Image processing and manipulation
 - **markdown**: Enhanced note formatting
 
 ## AI Technology
@@ -62,7 +59,6 @@ Visit `http://localhost:5000`
 - **Text**: Direct text input via textarea
 - **PDF**: Extracting text from PDF documents
 - **DOCX**: Microsoft Word document processing
-- **Images**: PNG/JPG files with OCR text extraction
 - **TXT**: Plain text file upload
 
 ## Deployment on Render
@@ -155,7 +151,6 @@ autonote/
 ├── utils/                # Utility modules
 │   ├── online_ai.py     # Google Gemini AI integration
 │   ├── chatbot.py       # Document chatbot functionality
-│   ├── ocr.py           # Image OCR processing
 │   ├── pdf_reader.py    # PDF text extraction
 │   ├── docx_reader.py   # DOCX text extraction
 │   ├── summarizer.py    # AI summarization orchestrator
@@ -167,7 +162,7 @@ autonote/
 ## Usage
 
 1. **Text Input**: Paste text directly into the textarea
-2. **File Upload**: Upload PDF, DOCX, TXT, or image files (max 10MB)
+2. **File Upload**: Upload PDF, DOCX, or TXT files (max 10MB)
 3. **Generate Notes**: Click "Generate Notes" to create structured bullet points
 4. **Download**: Choose from TXT, MD, PDF, or DOCX export formats
 

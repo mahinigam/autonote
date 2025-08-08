@@ -7,7 +7,6 @@ import uuid
 import threading
 import markdown
 from config import Config
-from utils.ocr import image_to_text
 from utils.pdf_reader import pdf_to_text
 from utils.docx_reader import docx_to_text
 from utils.summarizer import generate_notes
@@ -48,9 +47,7 @@ def allowed_file(filename):
 def extract_text_from_file(file_path, file_extension):
     """Extract text from uploaded file based on its extension"""
     try:
-        if file_extension in ['.png', '.jpg', '.jpeg']:
-            return image_to_text(file_path)
-        elif file_extension == '.pdf':
+        if file_extension == '.pdf':
             return pdf_to_text(file_path)
         elif file_extension == '.docx':
             return docx_to_text(file_path)
@@ -83,7 +80,6 @@ def health_check():
         "ai_status": ai_status,
         "features": {
             "online_ai": True,
-            "ocr": True,
             "pdf_processing": True,
             "docx_processing": True,
             "cloud_powered": True
@@ -128,7 +124,7 @@ def process():
                 flash(f"Error processing uploaded file: {str(file_error)}", "error")
                 return redirect(url_for('index'))
         elif file and file.filename and not allowed_file(file.filename):
-            flash("File type not supported. Please upload TXT, PDF, DOCX, PNG, or JPG files.", "error")
+            flash("File type not supported. Please upload TXT, PDF, or DOCX files.", "error")
             return redirect(url_for('index'))
     
     if not extracted_text.strip():
